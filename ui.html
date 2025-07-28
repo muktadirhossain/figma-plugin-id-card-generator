@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #333;
+        background: #fff;
+        padding: 16px;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .step {
+        margin-bottom: 24px;
+        padding: 16px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+
+      .step.active {
+        border-color: #0066cc;
+        background: #f0f7ff;
+      }
+
+      .step.completed {
+        border-color: #00aa44;
+        background: #f0fff4;
+      }
+
+      .step-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      .step-number {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #ccc;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 11px;
+      }
+
+      .step.active .step-number {
+        background: #0066cc;
+      }
+
+      .step.completed .step-number {
+        background: #00aa44;
+      }
+
+      .button {
+        background: #0066cc;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+
+      .button:hover {
+        background: #0052a3;
+      }
+
+      .button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .button.secondary {
+        background: #666;
+      }
+
+      .button.danger {
+        background: #cc0000;
+      }
+
+      .input-group {
+        margin-bottom: 12px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      .file-input {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+      }
+
+      .file-input input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+
+      .file-input .button {
+        pointer-events: none;
+      }
+
+      .progress {
+        background: #f0f0f0;
+        border-radius: 4px;
+        height: 20px;
+        margin: 8px 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        background: #0066cc;
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 4px;
+      }
+
+      .progress-text {
+        text-align: center;
+        margin-top: 4px;
+        font-size: 11px;
+        color: #666;
+      }
+
+      .info-box {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 4px;
+        padding: 12px;
+        margin: 8px 0;
+        font-size: 11px;
+      }
+
+      .error-box {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        padding: 12px;
+        margin: 8px 0;
+        color: #721c24;
+        font-size: 11px;
+      }
+
+      .success-box {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        padding: 12px;
+        margin: 8px 0;
+        color: #155724;
+        font-size: 11px;
+      }
+
+      .template-list {
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 8px;
+        background: white;
+      }
+
+      .template-item {
+        padding: 4px 8px;
+        margin: 2px 0;
+        background: #f8f9fa;
+        border-radius: 3px;
+        font-size: 11px;
+      }
+
+      .template-item.front {
+        border-left: 4px solid #007bff;
+      }
+
+      .template-item.back {
+        border-left: 4px solid #28a745;
+      }
+
+      .layer-mapping {
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 8px;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+
+      .layer-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 11px;
+      }
+
+      .generation-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 12px 0;
+      }
+
+      .images-list {
+        max-height: 100px;
+        overflow-y: auto;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 8px;
+        background: white;
+        margin-top: 8px;
+      }
+
+      .image-item {
+        padding: 2px 4px;
+        margin: 1px 0;
+        background: #f0f8ff;
+        border-radius: 2px;
+        font-size: 10px;
+        color: #0066cc;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 style="margin-bottom: 20px; color: #333">ID Card Generator</h2>
+
+      <!-- Step 1: Template Selection -->
+      <div class="step active" id="step1">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <span>Select Templates</span>
+        </div>
+        <div class="info-box">
+          Select the frame(s) in Figma that will serve as your ID card
+          templates. Name them with "front" and "back" to indicate card sides.
+        </div>
+        <button class="button" id="scanTemplates">
+          Scan Selected Templates
+        </button>
+        <div id="templatesList" class="hidden">
+          <div class="template-list" id="templatesContainer"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Image Upload -->
+      <div class="step" id="step2">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <span>Upload Images</span>
+        </div>
+        <div class="info-box">
+          Upload all the images you want to use in your ID cards. Make sure the
+          filenames match the values in your CSV photo column.
+        </div>
+        <div class="file-input">
+          <button class="button" type="button">Choose Images</button>
+          <input type="file" id="imageFiles" accept="image/*" multiple />
+        </div>
+        <div id="imagesList" class="hidden">
+          <div class="success-box" id="imagesInfo"></div>
+          <div class="images-list" id="imagesContainer"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: CSV Upload -->
+      <div class="step" id="step3">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <span>Upload CSV Data</span>
+        </div>
+        <div class="info-box">
+          Upload a CSV file where column headers match the layer names in your
+          template. The "photo" column should contain filenames (e.g.,
+          "john.jpg") that match your uploaded images.
+        </div>
+        <div class="file-input">
+          <button class="button" type="button">Choose CSV File</button>
+          <input type="file" id="csvFile" accept=".csv" />
+        </div>
+        <div id="csvInfo" class="hidden">
+          <div id="csvDetails"></div>
+          <div class="layer-mapping" id="layerMapping"></div>
+        </div>
+      </div>
+
+      <!-- Step 4: Generation Settings -->
+      <div class="step" id="step4">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <span>Generation Settings</span>
+        </div>
+        <div class="generation-controls">
+          <div class="input-group">
+            <label for="spacing">Card Spacing (px):</label>
+            <input type="number" id="spacing" value="20" min="0" max="200" />
+          </div>
+          <div class="input-group">
+            <label for="cardsPerRow">Cards per Row:</label>
+            <input type="number" id="cardsPerRow" value="3" min="1" max="10" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="imageScaling">Image Scaling:</label>
+          <select id="imageScaling">
+            <option value="FILL">Fill (stretch to fit)</option>
+            <option value="CROP">
+              Crop (maintain aspect ratio, crop excess)
+            </option>
+            <option value="FIT">Fit (maintain aspect ratio, show all)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="enableSmartResize" checked />
+            Enable Smart Text Resizing
+          </label>
+          <div class="info-box" style="margin-top: 8px; font-size: 10px">
+            Automatically reduces font size for long text like names and
+            addresses
+          </div>
+        </div>
+
+        <div class="advanced-options" id="advancedOptions">
+          <details style="margin-top: 12px">
+            <summary style="cursor: pointer; font-weight: 500">
+              Advanced Text Settings
+            </summary>
+            <div
+              style="
+                margin-top: 8px;
+                padding: 8px;
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+              "
+            >
+              <div class="input-group">
+                <label for="minFontSize">Minimum Font Size (px):</label>
+                <input
+                  type="number"
+                  id="minFontSize"
+                  value="6"
+                  min="4"
+                  max="20"
+                />
+              </div>
+              <div class="input-group">
+                <label for="safetyMargin">Safety Margin (%):</label>
+                <input
+                  type="number"
+                  id="safetyMargin"
+                  value="10"
+                  min="0"
+                  max="30"
+                />
+                <div class="info-box" style="margin-top: 4px">
+                  Extra space to prevent text from touching container edges
+                </div>
+              </div>
+              <div class="input-group">
+                <label>Text Length Thresholds:</label>
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px;
+                    font-size: 10px;
+                  "
+                >
+                  <div>
+                    <label for="nameThreshold">Names (long if >):</label>
+                    <input
+                      type="number"
+                      id="nameThreshold"
+                      value="20"
+                      min="10"
+                      max="50"
+                    />
+                  </div>
+                  <div>
+                    <label for="addressThreshold">Addresses (long if >):</label>
+                    <input
+                      type="number"
+                      id="addressThreshold"
+                      value="30"
+                      min="15"
+                      max="100"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div class="info-box">
+          <strong>File naming:</strong> Cards will be named as:
+          [id]-[username]-front / [id]-[username]-back<br />
+          <strong>Smart resizing:</strong> Text automatically shrinks for long
+          names, addresses, etc.<br />
+          <strong>Images:</strong> Upload images first, then reference by
+          filename in CSV photo column
+        </div>
+
+        <button class="button" id="generateCards" disabled>
+          Generate ID Cards
+        </button>
+        <button class="button secondary" id="debugState">Debug State</button>
+        <button class="button danger hidden" id="cancelGeneration">
+          Cancel
+        </button>
+      </div>
+
+      <!-- Step 5: Progress -->
+      <div class="step hidden" id="step5">
+        <div class="step-header">
+          <div class="step-number">5</div>
+          <span>Generation Progress</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Preparing...</div>
+      </div>
+
+      <div id="messages"></div>
+    </div>
+
+    <script>
+      let csvData = [];
+      let templates = [];
+      let layerNames = [];
+      let uploadedImages = [];
+      let isGenerating = false;
+
+      // Debug function
+      function logState() {
+        console.log("UI State:", {
+          csvDataLength: csvData.length,
+          templatesLength: templates.length,
+          layerNamesLength: layerNames.length,
+          uploadedImagesLength: uploadedImages.length,
+          isGenerating,
+        });
+      }
+
+      // UI Elements
+      const scanTemplatesBtn = document.getElementById("scanTemplates");
+      const imageFilesInput = document.getElementById("imageFiles");
+      const csvFileInput = document.getElementById("csvFile");
+      const generateCardsBtn = document.getElementById("generateCards");
+      const debugStateBtn = document.getElementById("debugState");
+      const cancelGenerationBtn = document.getElementById("cancelGeneration");
+      const spacingInput = document.getElementById("spacing");
+      const cardsPerRowInput = document.getElementById("cardsPerRow");
+      const imageScalingSelect = document.getElementById("imageScaling");
+      const enableSmartResizeCheck =
+        document.getElementById("enableSmartResize");
+      const minFontSizeInput = document.getElementById("minFontSize");
+      const safetyMarginInput = document.getElementById("safetyMargin");
+      const nameThresholdInput = document.getElementById("nameThreshold");
+      const addressThresholdInput = document.getElementById("addressThreshold");
+
+      // Step elements
+      const step1 = document.getElementById("step1");
+      const step2 = document.getElementById("step2");
+      const step3 = document.getElementById("step3");
+      const step4 = document.getElementById("step4");
+      const step5 = document.getElementById("step5");
+
+      // Event listeners
+      scanTemplatesBtn.addEventListener("click", () => {
+        parent.postMessage({ pluginMessage: { type: "scan-templates" } }, "*");
+      });
+
+      imageFilesInput.addEventListener("change", handleImageUpload);
+      csvFileInput.addEventListener("change", handleCSVUpload);
+      generateCardsBtn.addEventListener("click", startGeneration);
+      debugStateBtn.addEventListener("click", checkState);
+      cancelGenerationBtn.addEventListener("click", cancelGeneration);
+
+      function checkState() {
+        console.log("=== DEBUG STATE CHECK ===");
+        logState();
+        parent.postMessage({ pluginMessage: { type: "check-state" } }, "*");
+      }
+
+      async function handleImageUpload(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        console.log("Images selected:", files.length);
+
+        // Update button text to show selected files
+        const button = document.querySelector("#step2 .file-input .button");
+        button.textContent = `Selected: ${files.length} images`;
+        button.style.background = "#00aa44";
+
+        const imageDataArray = [];
+
+        try {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            console.log(`Processing image: ${file.name} (${file.size} bytes)`);
+
+            const arrayBuffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
+
+            imageDataArray.push({
+              name: file.name,
+              data: Array.from(uint8Array), // Convert to regular array for message passing
+            });
+          }
+
+          console.log("All images processed, sending to plugin");
+          uploadedImages = imageDataArray;
+
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: "upload-images",
+                images: imageDataArray,
+              },
+            },
+            "*"
+          );
+        } catch (error) {
+          console.error("Image upload error:", error);
+          showMessage("Error processing images: " + error.message, "error");
+          // Reset button on error
+          button.textContent = "Choose Images";
+          button.style.background = "#0066cc";
+        }
+      }
+
+      function handleCSVUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        console.log("CSV File selected:", file.name, "Size:", file.size);
+
+        // Update button text to show selected file
+        const button = document.querySelector("#step3 .file-input .button");
+        button.textContent = `Selected: ${file.name}`;
+        button.style.background = "#00aa44";
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const csv = e.target.result;
+            console.log("CSV File read successfully, length:", csv.length);
+
+            const parsed = parseCSV(csv);
+            console.log("CSV parsed successfully:", parsed.length, "rows");
+
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: "process-csv",
+                  data: parsed,
+                },
+              },
+              "*"
+            );
+          } catch (error) {
+            console.error("CSV parsing error:", error);
+            showMessage("Error parsing CSV: " + error.message, "error");
+            // Reset button on error
+            button.textContent = "Choose CSV File";
+            button.style.background = "#0066cc";
+          }
+        };
+
+        reader.onerror = function (error) {
+          console.error("File reading error:", error);
+          showMessage("Error reading file", "error");
+        };
+
+        reader.readAsText(file);
+      }
+
+      function parseCSV(csv) {
+        console.log("Raw CSV content:", csv.substring(0, 200) + "...");
+
+        // Handle different line endings
+        const lines = csv.split(/\r?\n/).filter((line) => line.trim() !== "");
+        console.log("Lines found:", lines.length);
+
+        if (lines.length < 2) {
+          throw new Error("CSV must have at least header and one data row");
+        }
+
+        // Parse headers - handle quoted fields
+        const headers = parseCSVLine(lines[0]);
+        console.log("Headers parsed:", headers);
+
+        const data = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim()) {
+            const values = parseCSVLine(lines[i]);
+            const row = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index] || "";
+            });
+            data.push(row);
+          }
+        }
+
+        console.log("Parsed data rows:", data.length);
+        console.log("Sample row:", data[0]);
+        return data;
+      }
+
+      function parseCSVLine(line) {
+        const result = [];
+        let current = "";
+        let inQuotes = false;
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === "," && !inQuotes) {
+            result.push(current.trim());
+            current = "";
+          } else {
+            current += char;
+          }
+        }
+
+        result.push(current.trim());
+        return result;
+      }
+
+      function startGeneration() {
+        logState();
+
+        if (!templates.length || !csvData.length) {
+          const errorMsg = `Please complete template selection and CSV upload first. Templates: ${templates.length}, CSV rows: ${csvData.length}`;
+          console.error(errorMsg);
+          showMessage(errorMsg, "error");
+          return;
+        }
+
+        const options = {
+          spacing: parseInt(spacingInput.value) || 20,
+          cardsPerRow: parseInt(cardsPerRowInput.value) || 3,
+          imageScaling: imageScalingSelect.value || "FILL",
+          textResize: {
+            enabled: enableSmartResizeCheck.checked,
+            minFontSize: parseInt(minFontSizeInput.value) || 6,
+            safetyMargin: (parseInt(safetyMarginInput.value) || 10) / 100,
+            nameThreshold: parseInt(nameThresholdInput.value) || 20,
+            addressThreshold: parseInt(addressThresholdInput.value) || 30,
+          },
+        };
+
+        console.log("Sending generate-cards message with options:", options);
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "generate-cards",
+              options: options,
+            },
+          },
+          "*"
+        );
+      }
+
+      function cancelGeneration() {
+        parent.postMessage(
+          { pluginMessage: { type: "cancel-generation" } },
+          "*"
+        );
+      }
+
+      function updateStepStatus(stepNum, status) {
+        const step = document.getElementById(`step${stepNum}`);
+        step.classList.remove("active", "completed");
+        step.classList.add(status);
+      }
+
+      function showMessage(message, type = "info") {
+        const messagesDiv = document.getElementById("messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `${type}-box`;
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+
+        setTimeout(() => {
+          messageDiv.remove();
+        }, 5000);
+      }
+
+      function updateProgress(current, total, percentage, currentCard = "") {
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        progressBar.style.width = percentage + "%";
+        const cardInfo = currentCard ? ` - Processing: ${currentCard}` : "";
+        progressText.textContent = `Generating card ${current} of ${total} (${percentage}%)${cardInfo}`;
+      }
+
+      function checkReadyToGenerate() {
+        const hasTemplates = templates.length > 0;
+        const hasCSV = csvData.length > 0;
+        const hasImages = uploadedImages.length > 0;
+
+        if (hasTemplates && hasCSV && hasImages) {
+          generateCardsBtn.disabled = false;
+          updateStepStatus(4, "active");
+        }
+      }
+
+      // Listen for messages from plugin
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+
+        switch (msg.type) {
+          case "plugin-ready":
+            break;
+
+          case "templates-scanned":
+            templates = msg.templates;
+            layerNames = msg.layerNames;
+            console.log(
+              "Templates scanned in UI:",
+              templates.length,
+              "templates"
+            );
+            console.log("Layer names:", layerNames);
+
+            const container = document.getElementById("templatesContainer");
+            container.innerHTML = "";
+
+            templates.forEach((template) => {
+              const item = document.createElement("div");
+              item.className = `template-item ${template.type}`;
+              item.textContent = `${template.name} (${template.type})`;
+              container.appendChild(item);
+            });
+
+            document.getElementById("templatesList").classList.remove("hidden");
+            updateStepStatus(1, "completed");
+            updateStepStatus(2, "active");
+
+            showMessage(`Found ${templates.length} template(s)`, "success");
+            checkReadyToGenerate();
+            break;
+
+          case "images-uploaded":
+            console.log("Images uploaded to plugin:", msg.count);
+
+            const imagesInfo = document.getElementById("imagesInfo");
+            imagesInfo.textContent = `Successfully uploaded ${msg.count} images`;
+
+            const imagesContainer = document.getElementById("imagesContainer");
+            imagesContainer.innerHTML = "";
+
+            msg.imageNames.forEach((imageName) => {
+              const item = document.createElement("div");
+              item.className = "image-item";
+              item.textContent = imageName;
+              imagesContainer.appendChild(item);
+            });
+
+            document.getElementById("imagesList").classList.remove("hidden");
+            updateStepStatus(2, "completed");
+            updateStepStatus(3, "active");
+
+            showMessage(`Uploaded ${msg.count} images successfully`, "success");
+            checkReadyToGenerate();
+            break;
+
+          case "csv-processed":
+            csvData = msg.data || [];
+            console.log("CSV processed in UI:", csvData.length, "rows");
+            console.log("Received data structure:", csvData);
+
+            // Validate that we actually have data
+            if (csvData.length === 0) {
+              console.error("No CSV data received from plugin");
+              showMessage(
+                "No CSV data was processed. Please try uploading again.",
+                "error"
+              );
+              return;
+            }
+
+            const csvDetails = document.getElementById("csvDetails");
+            csvDetails.innerHTML = `
+            <div class="success-box">
+              CSV loaded: ${msg.rowCount} rows found
+            </div>
+          `;
+
+            const layerMapping = document.getElementById("layerMapping");
+            layerMapping.innerHTML = "<strong>Layer Mapping:</strong><br>";
+
+            const headers = msg.headers || [];
+            headers.forEach((header) => {
+              const item = document.createElement("div");
+              item.className = "layer-item";
+              const isMatched = layerNames.includes(header);
+              item.innerHTML = `
+              <span>${header}</span>
+              <span style="color: ${isMatched ? "green" : "orange"}">
+                ${isMatched ? "✓ Matched" : "⚠ No match"}
+              </span>
+            `;
+              layerMapping.appendChild(item);
+            });
+
+            document.getElementById("csvInfo").classList.remove("hidden");
+            updateStepStatus(3, "completed");
+
+            showMessage(`CSV processed: ${msg.rowCount} rows`, "success");
+            checkReadyToGenerate();
+            break;
+
+          case "generation-started":
+            isGenerating = true;
+            step5.classList.remove("hidden");
+            updateStepStatus(5, "active");
+            generateCardsBtn.style.display = "none";
+            cancelGenerationBtn.classList.remove("hidden");
+            showMessage("Generation started...", "info");
+            break;
+
+          case "generation-progress":
+            updateProgress(
+              msg.current,
+              msg.total,
+              msg.percentage,
+              msg.currentCard
+            );
+            break;
+
+          case "generation-completed":
+            isGenerating = false;
+            updateStepStatus(5, "completed");
+            cancelGenerationBtn.classList.add("hidden");
+            generateCardsBtn.style.display = "inline-block";
+            showMessage(
+              `Successfully generated ${msg.totalGenerated} ID cards!`,
+              "success"
+            );
+            break;
+
+          case "generation-cancelled":
+            isGenerating = false;
+            cancelGenerationBtn.classList.add("hidden");
+            generateCardsBtn.style.display = "inline-block";
+            showMessage("Generation cancelled", "info");
+            break;
+
+          case "state-info":
+            console.log("=== PLUGIN STATE INFO ===");
+            console.log("Templates in plugin:", msg.templates);
+            console.log("CSV rows in plugin:", msg.csvRows);
+            console.log("Images in plugin:", msg.imagesCount);
+            console.log("Template names:", msg.templateNames);
+            console.log("CSV sample:", msg.csvSample);
+            console.log("Image names:", msg.imageNames);
+
+            showMessage(
+              `Plugin State - Templates: ${msg.templates}, CSV Rows: ${msg.csvRows}, Images: ${msg.imagesCount}`,
+              "info"
+            );
+            break;
+
+          case "error":
+            showMessage(msg.message, "error");
+            break;
+        }
+      };
+    </script>
+  </body>
+</html>

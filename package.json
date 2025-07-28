@@ -1,0 +1,20 @@
+{
+  "name": "figma-id-card-generator",
+  "version": "1.0.0",
+  "description": "A Figma plugin to generate ID cards dynamically from CSV data",
+  "main": "code.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.90.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "manifest.json",
+    "code.js",
+    "ui.html"
+  ]
+}
