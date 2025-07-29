@@ -1,11 +1,12 @@
 {
   "name": "ID Card Generator",
-  "id": "id-card-generator",
+  "id": "1531575374864956791",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
   "capabilities": [],
   "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
   "editorType": ["figma"],
   "networkAccess": {
     "allowedDomains": ["none"]
